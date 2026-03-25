@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ───────── data ───────── */
 
@@ -194,6 +194,14 @@ export default function Home() {
     message: "",
   });
   const [submitted, setSubmitted] = useState(false);
+  const [waConfig, setWaConfig] = useState({ whatsappNumber: "", whatsappMessage: "" });
+
+  useEffect(() => {
+    fetch("/config.json")
+      .then((r) => r.json())
+      .then(setWaConfig)
+      .catch(() => {});
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -845,6 +853,21 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* ── WHATSAPP FLOAT ── */}
+      {waConfig.whatsappNumber && (
+        <a
+          href={`https://wa.me/${waConfig.whatsappNumber.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(waConfig.whatsappMessage)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-[#25D366] shadow-lg shadow-[#25D366]/30 transition-all hover:scale-110 hover:shadow-xl hover:shadow-[#25D366]/40"
+          aria-label="Chat on WhatsApp"
+        >
+          <svg viewBox="0 0 32 32" className="h-9 w-9 fill-white">
+            <path d="M16.004 0h-.008C7.174 0 0 7.176 0 16.004c0 3.5 1.128 6.744 3.046 9.378L1.054 31.27l6.156-1.952a15.93 15.93 0 008.794 2.634C24.826 31.952 32 24.776 32 16.004 32 7.176 24.826 0 16.004 0zm9.314 22.608c-.39 1.1-1.932 2.012-3.182 2.278-.854.18-1.968.324-5.72-1.228-4.804-1.986-7.894-6.858-8.132-7.174-.228-.316-1.926-2.566-1.926-4.894 0-2.328 1.218-3.472 1.65-3.946.39-.428 1.022-.624 1.63-.624.196 0 .372.01.53.018.468.02.702.048 1.012.784.386.918 1.326 3.246 1.442 3.484.118.238.236.56.078.876-.148.326-.278.47-.516.742-.238.272-.464.48-.702.774-.218.258-.464.534-.196 1.012.268.468 1.192 1.966 2.558 3.184 1.758 1.566 3.24 2.052 3.698 2.278.468.228.742.196 1.012-.118.278-.316 1.178-1.374 1.492-1.844.306-.468.624-.39 1.052-.234.434.158 2.752 1.298 3.222 1.534.468.238.782.352.898.55.118.196.118 1.148-.272 2.248z" />
+          </svg>
+        </a>
+      )}
     </main>
   );
 }
